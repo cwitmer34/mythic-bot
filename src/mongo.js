@@ -48,7 +48,9 @@ class MongoDB {
     return await mongoose.connection
       .useDb("mythicdatabase")
       .collection("openApplications")
-      .find()
+      .find({
+        _id: { $nin: appsBeingReviewed },
+      })
       .sort({ _id: 1 })
       .limit(3)
       .toArray();

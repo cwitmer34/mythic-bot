@@ -7,6 +7,10 @@ const commands = [
     name: "register",
     description: "Start the player registration process",
   },
+  {
+    name: "reviewapps",
+    description: "Start reviewing player registration applications",
+  },
 ];
 
 const rest = new REST({ version: "10" }).setToken(config.token);
