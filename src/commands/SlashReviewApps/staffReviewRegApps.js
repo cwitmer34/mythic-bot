@@ -2,7 +2,11 @@ const { client, appsBeingReviewed } = require("../../index");
 const mongo = require("../../mongo"); // Ensure this is correct
 const mongoose = require("mongoose");
 const config = require("../../config.json");
-const { currentAppEmbed, endReviewEmbed } = require("../../util/embeds/registrationAppReview");
+const {
+  currentAppEmbed,
+  endReviewEmbed,
+  noMoreAppsEmbed,
+} = require("../../util/embeds/registrationAppReview");
 const { ActionRowBuilder } = require("@discordjs/builders");
 const { ButtonBuilder } = require("@discordjs/builders");
 const { ButtonStyle } = require("discord.js");
@@ -51,7 +55,16 @@ async function approveApplication(interaction) {
 
 async function denyApplication(interaction) {}
 
-async function handleNextApplication(interaction) {}
+async function handleNextApplication(interaction) {
+  const app = await removeFirstAndGetNext(interaction.user.id);
+  if (!app) {
+    return interaction.update({
+      embeds: [noMoreAppsEmbed(interaction.user.tag)],
+      components: [],
+    });
+  }
+  interaction.update({ embeds: [currentAppEmbed(app)], components: [reviewRow] });
+}
 
 const reviewRow = new ActionRowBuilder()
   .addComponents(
@@ -69,3 +82,16 @@ const reviewRow = new ActionRowBuilder()
   .addComponents(
     new ButtonBuilder().setCustomId("quitRegApp").setLabel("Quit").setStyle(ButtonStyle.Secondary)
   );
+
+async function removeFirstAndGetNext(id) {
+  const previousApps = appsBeingReviewed.get(id);
+  if (previousApps.length > 1) {
+    previousApps.shift();
+    return previousApps[0];
+  } else {
+    const docsToExclude = previousApps.map((app) => app._id);
+    const newApps = await mongo.fetchRegistrationApps(docsToExclude);
+    appsBeingReviewed.set(id, newApps);
+    return !!newApps ? newApps[0] : null;
+  }
+}
