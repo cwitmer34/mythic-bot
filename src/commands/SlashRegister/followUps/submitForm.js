@@ -2,7 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const { client } = require("../../../index.js");
 const { playersCurrentlyRegistering } = require("../playerRegister.js");
 const { MessageEmbed } = require("discord.js");
-const { mongo } = require("../../../mongo.js");
+const mongo = require("../../../mongo.js");
 
 client.on("interactionCreate", async (interaction) => {
   if (

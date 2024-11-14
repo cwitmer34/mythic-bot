@@ -1,6 +1,6 @@
 const { client } = require("../../../index.js");
 const { playersCurrentlyRegistering } = require("../playerRegister.js");
-const { sixMansRank } = require("../../../util/embeds/registrationEmbeds");
+const { sixMansRank, automaticDenial } = require("../../../util/embeds/registrationEmbeds");
 const {
   StringSelectMenuBuilder,
   ActionRowBuilder,

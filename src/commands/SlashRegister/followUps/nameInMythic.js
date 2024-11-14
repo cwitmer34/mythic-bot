@@ -66,7 +66,7 @@ client.on("interactionCreate", async (interaction) => {
   )
     return;
 
-  playersCurrentlyRegistering.get(interaction.user.id).alternateTrackers = "N/A";
+  playersCurrentlyRegistering.get(interaction.user.id).alternateTrackers = [];
 
   return await interaction.showModal(nameModal).then(() => {
     interaction.editReply({

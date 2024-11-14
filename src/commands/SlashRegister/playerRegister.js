@@ -1,6 +1,6 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { client } = require("../../index");
-const { mongo } = require("../../mongo");
+const mongo = require("../../mongo");
 const {
   alreadyRegistered,
   notYetRegistered,

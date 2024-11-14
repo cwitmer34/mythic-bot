@@ -1,6 +1,6 @@
 const { ModalBuilder } = require("@discordjs/builders");
 const { client } = require("../../../index");
-const { mongo } = require("../../../mongo");
+const mongo = require("../../../mongo");
 const { playersCurrentlyRegistering } = require("../playerRegister.js");
 const {
   agreeToRules,
@@ -25,11 +25,16 @@ client.on("interactionCreate", async (interaction) => {
         interaction.user.displayAvatarURL()
       );
 
+      await interaction.update({
+        embeds: [embed],
+        components: [],
+      });
       for (let i = 5; i >= 0; i--) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         embed.setTitle(`Misclick Detected (${i})`);
         await interaction.editReply({
           embeds: [embed],
+          components: [],
         });
       }
 

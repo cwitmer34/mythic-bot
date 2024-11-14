@@ -1,7 +1,7 @@
 const { client } = require("../../../index.js");
 const { playersCurrentlyRegistering } = require("../playerRegister.js");
 const { TextInputBuilder } = require("@discordjs/builders");
-const { mongo } = require("../../../mongo");
+const mongo = require("../../../mongo");
 const {
   automaticDenial,
   misclickHasBeenDenied,

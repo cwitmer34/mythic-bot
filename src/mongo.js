@@ -1,9 +1,5 @@
 const mongoose = require("mongoose");
 const config = require("./config.json");
-const actionReportSchema = require("./models/actionReportSchema");
-const franchiseProfileSchema = require("./models/franchiseProfileSchema");
-const playerProfileSchema = require("./models/playerProfileSchema");
-const registrationAppSchema = require("./models/registrationAppSchema");
 
 class MongoDB {
   constructor() {
@@ -16,7 +12,7 @@ class MongoDB {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    if (mongoose.connect) {
+    if (mongoose.connection.readyState === 1) {
       console.log("Connected to MongoDB");
     } else {
       console.log(`Failed to connect to MongoDB, ready state is ${mongoose.connection.readyState}`);
@@ -44,13 +40,11 @@ class MongoDB {
     return !!player;
   }
 
-  async fetchRegistrationApps() {
+  async fetchRegistrationApps(docsToExclude = []) {
     return await mongoose.connection
       .useDb("mythicdatabase")
       .collection("openApplications")
-      .find({
-        _id: { $nin: appsBeingReviewed },
-      })
+      .find({ _id: { $nin: docsToExclude } })
       .sort({ _id: 1 })
       .limit(3)
       .toArray();
@@ -61,7 +55,7 @@ class MongoDB {
       .useDb("mythicdatabase")
       .collection("actionReports")
       .findOne({ id: playerID });
-    return actionReports !== null ? true : false;
+    return actionReports !== null;
   }
 
   async hasBeenDenied(playerID) {
@@ -69,7 +63,7 @@ class MongoDB {
       .useDb("mythicdatabase")
       .collection("previousDenials")
       .findOne({ id: playerID });
-    return denials !== null ? true : false;
+    return denials !== null;
   }
 
   async fetchPlayersDeniedApps(playerID) {
@@ -104,6 +98,10 @@ class MongoDB {
     return await mongoose.connection.useDb("mythicdatabase").collection("players").countDocuments();
   }
 
+  async isConnected() {
+    return mongoose.connection.readyState === 1;
+  }
+
   async getPlayer(playerID) {
     return await mongoose.connection
       .useDb("mythicdatabase")
@@ -113,5 +111,4 @@ class MongoDB {
 }
 
 const mongo = new MongoDB();
-
-module.exports = { mongo };
+module.exports = mongo;

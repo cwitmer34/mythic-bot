@@ -164,6 +164,7 @@ function allOtherTrackersSubmit(text, iconURL) {
 
 function misclickHasActionReports(text, iconURL) {
   return new EmbedBuilder()
+    .setTitle("Misclick Detected (5)")
     .setColor("#FF5555")
     .setDescription(
       "It appears you misclicked the option saying that you have action reports, because we can't find any record of it in our database!"

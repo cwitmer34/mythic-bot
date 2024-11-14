@@ -1,19 +1,9 @@
-const mongoose = require("mongoose");
 const { Client, IntentsBitField } = require("discord.js");
+const mongo = require("./mongo");
 const config = require("./config.json");
 require("dotenv").config();
 
-(async () => {
-  await mongoose.connect(config.mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  if (mongoose.connect) {
-    console.log("Connected to MongoDB");
-  } else {
-    console.log(`Failed to connect to MongoDB, ready state is ${mongoose.connection.readyState}`);
-  }
-})();
+const appsBeingReviewed = new Map();
 
 const client = new Client({
   intents: [
@@ -37,7 +27,7 @@ client.on("messageCreate", (msg) => {
 console.log(config.token);
 client.login(config.token);
 
-module.exports = { client };
+module.exports = { client, appsBeingReviewed };
 
 require("./commands/SlashRegister/playerRegister");
 require("./commands/SlashReviewApps/staffReviewRegApps");
