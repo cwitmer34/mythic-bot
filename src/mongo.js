@@ -26,17 +26,17 @@ class MongoDB {
       .insertOne(player);
   }
 
-  async deleteRegistrationApp(id) {
+  async deleteRegistrationApp(_id) {
     await mongoose.connection.useDb("mythicdatabase").collection("openApplications").deleteOne({
-      _id: id,
+      _id,
     });
   }
 
-  async checkPlayerRegistration(playerID) {
+  async checkPlayerRegistration(playerId) {
     const player = await mongoose.connection
       .useDb("mythicdatabase")
       .collection("players")
-      .findOne({ id: playerID });
+      .findOne({ id: playerId });
     return !!player;
   }
 

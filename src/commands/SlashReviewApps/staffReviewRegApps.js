@@ -45,7 +45,8 @@ client.on("interactionCreate", async (interaction) => {
 async function startReviewProcess(interaction) {
   try {
     const currentApps = await mongo.fetchRegistrationApps();
-    console.log(currentApps.length);
+    if (!currentApps.length)
+      return interaction.reply({ embeds: [noMoreAppsEmbed(interaction.user.displayName)] });
     appsBeingReviewed.set(interaction.user.id, currentApps);
     interaction.reply({
       embeds: [currentAppEmbed(currentApps[0])],
