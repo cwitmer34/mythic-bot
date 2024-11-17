@@ -13,6 +13,7 @@ const {
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder } = require("@discordjs/builders");
 const { ButtonBuilder } = require("@discordjs/builders");
 const { ButtonStyle, TextInputStyle } = require("discord.js");
+const { alreadyRegistered } = require("../../util/embeds/registrationEmbeds");
 
 client.on("interactionCreate", async (interaction) => {
   if (
@@ -52,8 +53,17 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 async function checkAppStatus(interaction) {
-  const app = await mongo.checkPlayerRegistration(interaction.user.id);
-  if (!app)
+  const hasApplied = await mongo.fetchRegistrationApp(interaction.user.id);
+  const isRegistered = await mongo.checkPlayerRegistration(interaction.user.id);
+  console.log(isRegistered);
+  console.log(hasApplied);
+  if (isRegistered)
+    return interaction.reply({
+      embeds: [
+        alreadyRegistered(interaction.user.displayName, interaction.user.displayAvatarURL()),
+      ],
+    });
+  if (!hasApplied)
     return interaction.reply({
       embeds: [noAppFoundEmbed(interaction.user.displayName, interaction.user.displayAvatarURL())],
     });

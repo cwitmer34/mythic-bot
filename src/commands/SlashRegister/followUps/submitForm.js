@@ -60,6 +60,6 @@ client.on("interactionCreate", async (interaction) => {
       { name: "Rules Acknowledged", value: `${player.agreeToRules}`, inline: true },
     ]);
 
-  mongo.saveRegistrationApp(player);
+  await mongo.saveRegistrationApp(player);
   return interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
 });

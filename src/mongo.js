@@ -40,6 +40,13 @@ class MongoDB {
     return !!player;
   }
 
+  async fetchRegistrationApp(playerId) {
+    return await mongoose.connection
+      .useDb("mythicdatabase")
+      .collection("openApplications")
+      .findOne({ playerId });
+  }
+
   async fetchRegistrationApps(docsToExclude = []) {
     return await mongoose.connection
       .useDb("mythicdatabase")
