@@ -35,10 +35,15 @@ client.on("interactionCreate", async (interaction) => {
     });
   }
 
-  playersCurrentlyRegistering.get(interaction.user.id).username = username;
   const player = playersCurrentlyRegistering.get(interaction.user.id);
+  player.username = username;
   player.playerId = interaction.user.id;
-  const alternateTrackersFormatted = player.alternateTrackers.join("\n");
+  let alternateTrackersFormatted;
+
+  if (player.alternateTrackers.length === 0) {
+    alternateTrackersFormatted = "None";
+  } else player.alternateTrackers.join("\n");
+
   const embed = new EmbedBuilder()
     .setTitle("Application Information")
     .setColor("#0099ff")
