@@ -3,6 +3,8 @@ const { client } = require("../../../index.js");
 const { playersCurrentlyRegistering } = require("../playerRegister.js");
 const { MessageEmbed } = require("discord.js");
 const mongo = require("../../../mongo.js");
+const { nameRow } = require("./nameInMythic.js");
+const { invalidNameEmbed } = require("../../../util/embeds/registrationEmbeds.js");
 
 client.on("interactionCreate", async (interaction) => {
   if (
@@ -16,6 +18,14 @@ client.on("interactionCreate", async (interaction) => {
   const amountOfActionReports = await mongo.amountOfActionReports(interaction.user.id);
   const amountOfDeniedApps = await mongo.amountOfDeniedApps(interaction.user.id);
   const username = interaction.fields.getTextInputValue("mythicName");
+
+  if (await mongo.invalidName(username)) {
+    return await interaction.editReply({
+      embeds: [invalidNameEmbed(interaction.user.id, interaction.user.displayAvatarURL())],
+      components: [nameRow],
+    });
+  }
+
   playersCurrentlyRegistering.get(interaction.user.id).username = username;
   const player = playersCurrentlyRegistering.get(interaction.user.id);
   player.playerId = interaction.user.id;

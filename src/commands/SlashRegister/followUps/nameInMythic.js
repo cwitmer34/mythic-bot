@@ -108,3 +108,5 @@ const nameModal = new ModalBuilder()
   );
 
 require("./submitForm.js");
+
+module.exports = { nameRow };
