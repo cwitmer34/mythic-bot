@@ -36,7 +36,7 @@ class MongoDB {
     const player = await mongoose.connection
       .useDb("mythicdatabase")
       .collection("players")
-      .findOne({ id: playerId });
+      .findOne({ playerId });
     return !!player;
   }
 

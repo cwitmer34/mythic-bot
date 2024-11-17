@@ -10,6 +10,34 @@ function endReviewEmbed(username) {
     .setFooter({ text: `Ended by ${username}` });
 }
 
+function appWaitingForReviewEmbed(text, iconURL) {
+  return new EmbedBuilder()
+    .setTitle("Application Waiting for Review")
+    .setColor("#55FF55")
+    .setDescription("This application has been submitted and is now waiting to be reviewed.")
+    .setFooter({ text, iconURL });
+}
+
+function appAlreadySubmittedEmbed(text, iconURL) {
+  return new EmbedBuilder()
+    .setTitle("Application Already Submitted")
+    .setColor("#FF5555")
+    .setDescription(
+      "It appears that you have already submitted an application. Please wait for it to be reviewed."
+    )
+    .setFooter({ text, iconURL });
+}
+
+function noAppFoundEmbed(text, iconURL) {
+  return new EmbedBuilder()
+    .setTitle("No Application Found")
+    .setColor("#FF5555")
+    .setDescription(
+      "We could not find an application for that user. Please use `/register` to submit an application."
+    )
+    .setFooter({ text, iconURL });
+}
+
 function noMoreAppsEmbed(username) {
   return new EmbedBuilder()
     .setTitle("No More Applications")
@@ -78,4 +106,11 @@ function currentAppEmbed(doc) {
   return embed;
 }
 
-module.exports = { currentAppEmbed, endReviewEmbed, noMoreAppsEmbed };
+module.exports = {
+  currentAppEmbed,
+  endReviewEmbed,
+  noMoreAppsEmbed,
+  noAppFoundEmbed,
+  appAlreadySubmittedEmbed,
+  appWaitingForReviewEmbed,
+};

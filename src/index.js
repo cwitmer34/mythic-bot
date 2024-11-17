@@ -30,4 +30,4 @@ client.login(config.token);
 module.exports = { client, appsBeingReviewed };
 
 require("./commands/SlashRegister/playerRegister");
-require("./commands/SlashReviewApps/staffReviewRegApps");
+require("./commands/AppReviewCmds/staffReviewRegApps");
