@@ -30,7 +30,7 @@ client.on("interactionCreate", async (interaction) => {
         : notYetRegistered(interaction.user.displayName, interaction.user.displayAvatarURL()),
     ],
     ephemeral: true,
-    components: [isRegistered ? [] : buttons],
+    components: isRegistered ? [] : [buttons],
   });
 });
 
