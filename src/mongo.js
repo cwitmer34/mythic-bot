@@ -26,9 +26,9 @@ class MongoDB {
       .insertOne(player);
   }
 
-  async deleteRegistrationApp(playerID) {
+  async deleteRegistrationApp(id) {
     await mongoose.connection.useDb("mythicdatabase").collection("openApplications").deleteOne({
-      id: playerID,
+      _id: id,
     });
   }
 
@@ -102,11 +102,22 @@ class MongoDB {
     return mongoose.connection.readyState === 1;
   }
 
+  async savePlayer(player, salary) {
+    await mongoose.connection
+      .useDb("mythicdatabase")
+      .collection("players")
+      .insertOne({ ...player, salary });
+  }
+
   async getPlayer(playerID) {
     return await mongoose.connection
       .useDb("mythicdatabase")
       .collection("players")
       .findOne({ id: playerID });
+  }
+
+  async invalidName(username) {
+    return await mongoose.connection.useDb("mythicdatabase").collection("players").findOne();
   }
 }
 
