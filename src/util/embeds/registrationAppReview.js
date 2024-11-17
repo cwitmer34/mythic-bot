@@ -72,7 +72,7 @@ function currentAppEmbed(doc) {
         name: "User explanation of denial(s)",
         value: `${doc.denial.reasonForDenial}`,
       },
-      { name: "Denial(s) Appeal", value: `${doc.denial.denialAppeal}`, nline: true },
+      { name: "Denial(s) Appeal", value: `${doc.denial.appeal}`, nline: true },
     ]);
   }
   return embed;

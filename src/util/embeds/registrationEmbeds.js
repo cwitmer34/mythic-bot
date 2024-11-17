@@ -191,6 +191,15 @@ function prevDenied(text, iconURL) {
     .setFooter({ text, iconURL });
 }
 
+function invalidNameEmbed(text, iconURL) {
+  return new EmbedBuilder()
+    .setTitle("Invalid Username")
+    .setColor("Red")
+    .setDescription(
+      "The name you have provided is already taken by another active player in our league, please choose a different name. **Please note this name must match your RL in game name**."
+    );
+}
+
 module.exports = {
   alreadyRegistered,
   notYetRegistered,
@@ -211,4 +220,5 @@ module.exports = {
   allOtherTrackersSubmit,
   nameInMythic,
   nameAlreadyTaken,
+  invalidNameEmbed,
 };
