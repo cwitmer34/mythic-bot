@@ -72,11 +72,12 @@ function currentAppEmbed(doc) {
       },
       {
         name: "Alternate Trackers",
-        value: Array.isArray(doc.alternateTrackers)
-          ? doc.alternateTrackers
-              .map((tracker, index) => `[Tracker ${index + 2}](${tracker})`)
-              .join(",\n ")
-          : "No alternate trackers provided",
+        value:
+          typeof doc.alternateTrackers === String
+            ? doc.alternateTrackers
+                .map((tracker, index) => `[Tracker ${index + 2}](${tracker})`)
+                .join(",\n ")
+            : "None provided",
         inline: true,
       },
       {
