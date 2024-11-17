@@ -17,7 +17,7 @@ const commands = [
   },
   {
     name: "checkappstatus",
-    description: "Check the status of your player registration application",
+    description: "Check the status of a player registration application",
   },
 ];
 
