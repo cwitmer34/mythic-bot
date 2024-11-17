@@ -15,6 +15,10 @@ const commands = [
     name: "playercount",
     description: "Get the current player count (test command)",
   },
+  {
+    name: "checkappstatus",
+    description: "Check the status of your player registration application",
+  },
 ];
 
 const rest = new REST({ version: "10" }).setToken(config.token);

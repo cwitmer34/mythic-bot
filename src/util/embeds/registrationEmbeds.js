@@ -197,7 +197,8 @@ function invalidNameEmbed(text, iconURL) {
     .setColor("Red")
     .setDescription(
       "The name you have provided is already taken by another active player in our league, please choose a different name. **Please note this name must match your RL in game name**."
-    );
+    )
+    .setFooter({ text, iconURL });
 }
 
 module.exports = {

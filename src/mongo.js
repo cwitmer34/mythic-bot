@@ -117,7 +117,10 @@ class MongoDB {
   }
 
   async invalidName(username) {
-    return await mongoose.connection.useDb("mythicdatabase").collection("players").findOne();
+    return await mongoose.connection
+      .useDb("mythicdatabase")
+      .collection("players")
+      .findOne({ username });
   }
 }
 

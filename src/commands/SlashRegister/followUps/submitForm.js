@@ -1,10 +1,12 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, ButtonStyle } = require("discord.js");
 const { client } = require("../../../index.js");
 const { playersCurrentlyRegistering } = require("../playerRegister.js");
 const { MessageEmbed } = require("discord.js");
 const mongo = require("../../../mongo.js");
 const { nameRow } = require("./nameInMythic.js");
 const { invalidNameEmbed } = require("../../../util/embeds/registrationEmbeds.js");
+const { ButtonBuilder } = require("discord.js");
+const { ActionRowBuilder } = require("discord.js");
 
 client.on("interactionCreate", async (interaction) => {
   if (
@@ -18,6 +20,13 @@ client.on("interactionCreate", async (interaction) => {
   const amountOfActionReports = await mongo.amountOfActionReports(interaction.user.id);
   const amountOfDeniedApps = await mongo.amountOfDeniedApps(interaction.user.id);
   const username = interaction.fields.getTextInputValue("mythicName");
+
+  const nameRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("chooseMythicName")
+      .setLabel("Choose name")
+      .setStyle(ButtonStyle.Primary)
+  );
 
   if (await mongo.invalidName(username)) {
     return await interaction.editReply({
