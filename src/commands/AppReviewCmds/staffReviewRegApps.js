@@ -27,8 +27,12 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.isButton() && interaction.customId === "approveRegApp" && !interaction.user.bot)
     assignSalary(interaction);
-  if (interaction.isButton() && interaction.customId === "denyRegApp" && !interaction.user.bot)
+
+  if (interaction.isModalSubmit() && interaction.customId === "denyModal" && !interaction.user.bot)
     denyApplication(interaction);
+
+  if (interaction.isButton() && interaction.customId === "denyRegApp" && !interaction.user.bot)
+    showDenyModal(interaction);
 
   if (interaction.isButton() && interaction.customId === "skipRegApp" && !interaction.user.bot)
     handleNextApplication(interaction);
@@ -55,8 +59,7 @@ client.on("interactionCreate", async (interaction) => {
 async function checkAppStatus(interaction) {
   const hasApplied = await mongo.fetchRegistrationApp(interaction.user.id);
   const isRegistered = await mongo.checkPlayerRegistration(interaction.user.id);
-  console.log(isRegistered);
-  console.log(hasApplied);
+
   if (isRegistered)
     return interaction.reply({
       embeds: [
@@ -135,7 +138,25 @@ async function approveApplication(interaction) {
   return handleNextApplication(interaction);
 }
 
-async function denyApplication(interaction) {}
+async function showDenyModal(interaction) {
+  const app = appsBeingReviewed.get(interaction.user.id)[0];
+  interaction.showModal(denyModal(app.username));
+}
+
+async function denyApplication(interaction) {
+  const app = appsBeingReviewed.get(interaction.user.id)[0];
+
+  const denyReason = interaction.fields.getTextInputValue("denyAppReason");
+  const user = interaction.guild.members.cache.get(app.playerId);
+
+  if (user !== undefined) {
+    user.send(`${denyReason}`);
+  } else
+    interaction.channel.send(
+      `failed to send <@${userid}> a message. bot may not have perms or they have their dms off. deny reason is ${denyReason}`
+    );
+  handleNextApplication(interaction);
+}
 
 async function handleNextApplication(interaction) {
   const app = await removeFirstAndGetNext(interaction.user.id);
@@ -166,6 +187,20 @@ const reviewRow = new ActionRowBuilder()
   .addComponents(
     new ButtonBuilder().setCustomId("quitRegApp").setLabel("Quit").setStyle(ButtonStyle.Secondary)
   );
+
+const denyModal = (name) =>
+  new ModalBuilder()
+    .setCustomId("denyModal")
+    .setTitle(`Deny ${name}'s Application`)
+    .addComponents(
+      new ActionRowBuilder().addComponents(
+        new TextInputBuilder()
+          .setCustomId("denyAppReason")
+          .setLabel("What is the reason for denial?")
+          .setPlaceholder("Reason")
+          .setStyle(TextInputStyle.Short)
+      )
+    );
 
 const salaryModal = (name) =>
   new ModalBuilder()
