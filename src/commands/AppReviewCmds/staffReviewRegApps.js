@@ -9,11 +9,14 @@ const {
   noAppFoundEmbed,
   appAlreadySubmittedEmbed,
   appWaitingForReviewEmbed,
+  denyApplicationEmbed,
+  approveApplicationEmbed,
 } = require("../../util/embeds/registrationAppReview");
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder } = require("@discordjs/builders");
 const { ButtonBuilder } = require("@discordjs/builders");
 const { ButtonStyle, TextInputStyle } = require("discord.js");
 const { alreadyRegistered } = require("../../util/embeds/registrationEmbeds");
+const { messageUser } = require("../../util/utils");
 
 client.on("interactionCreate", async (interaction) => {
   if (
@@ -135,6 +138,7 @@ async function approveApplication(interaction) {
     (player.teamId = 0),
     await mongo.savePlayer(appsBeingReviewed.get(interaction.user.id)[0], salary);
   await mongo.deleteRegistrationApp(player._id);
+  messageUser(interaction.guild.members.cache.get(player.playerId), approveApplicationEmbed());
   return handleNextApplication(interaction);
 }
 
@@ -144,17 +148,14 @@ async function showDenyModal(interaction) {
 }
 
 async function denyApplication(interaction) {
-  const app = appsBeingReviewed.get(interaction.user.id)[0];
+  const player = appsBeingReviewed.get(interaction.user.id)[0];
 
   const denyReason = interaction.fields.getTextInputValue("denyAppReason");
-  const user = interaction.guild.members.cache.get(app.playerId);
 
-  if (user !== undefined) {
-    user.send(`${denyReason}`);
-  } else
-    interaction.channel.send(
-      `failed to send <@${userid}> a message. bot may not have perms or they have their dms off. deny reason is ${denyReason}`
-    );
+  messageUser(
+    interaction.guild.members.cache.get(player.playerId),
+    denyApplicationEmbed(player, denyReason)
+  );
   handleNextApplication(interaction);
 }
 

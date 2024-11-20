@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+const { client } = require("../..");
 
 function endReviewEmbed(username) {
   return new EmbedBuilder()
@@ -86,7 +87,7 @@ function currentAppEmbed(doc) {
         inline: true,
       },
     ]);
-  if (doc.actionReports) {
+  if (doc.actionReporobjectts) {
     embed.addFields([
       {
         name: "User explanation of report(s)",
@@ -107,6 +108,24 @@ function currentAppEmbed(doc) {
   return embed;
 }
 
+function approveApplicationEmbed() {
+  return new EmbedBuilder()
+    .setTitle("Application Approved")
+    .setColor("#55FF55")
+    .setDescription(`Your player application has been approved... \`MORE INFO GOES HERE\``)
+    .setFooter({ text: client.user.displayName, iconURL: client.user.displayAvatarURL() });
+}
+
+function denyApplicationEmbed(player, reason) {
+  return new EmbedBuilder()
+    .setTitle("Application Denied")
+    .setColor("#FF5555")
+    .setDescription(
+      `Your player application has been denied.\n\nReason: ${reason}\n\nPlease feel free to reapply in the future.`
+    )
+    .setFooter({ text: client.user.displayName, iconURL: client.user.displayAvatarURL() });
+}
+
 module.exports = {
   currentAppEmbed,
   endReviewEmbed,
@@ -114,4 +133,6 @@ module.exports = {
   noAppFoundEmbed,
   appAlreadySubmittedEmbed,
   appWaitingForReviewEmbed,
+  denyApplicationEmbed,
+  approveApplicationEmbed,
 };
