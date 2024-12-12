@@ -12,64 +12,54 @@ const { ActionRowBuilder } = require("@discordjs/builders");
 const { ButtonBuilder } = require("@discordjs/builders");
 const { TextInputBuilder } = require("@discordjs/builders");
 
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isButton() || interaction.user.bot) return;
-  if (interaction.customId === "claimsActionReports") {
-    const hasActionReports = await mongo.hasActionReports(interaction.user.id);
+async function handleClaimsActionReports(interaction) {
+  const hasActionReports = await mongo.hasActionReports(interaction.user.id);
 
-    if (hasActionReports) {
-      await interaction.showModal(modal);
-    } else {
-      const embed = misclickHasActionReports(
-        interaction.user.displayName,
-        interaction.user.displayAvatarURL()
-      );
+  if (hasActionReports) {
+    await interaction.showModal(modal);
+  } else {
+    const embed = misclickHasActionReports(
+      interaction.user.displayName,
+      interaction.user.displayAvatarURL()
+    );
 
-      await interaction.update({
+    await interaction.update({
+      embeds: [embed],
+      components: [],
+    });
+    for (let i = 5; i >= 0; i--) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      embed.setTitle(`Misclick Detected (${i})`);
+      await interaction.editReply({
         embeds: [embed],
         components: [],
       });
-      for (let i = 5; i >= 0; i--) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        embed.setTitle(`Misclick Detected (${i})`);
-        await interaction.editReply({
-          embeds: [embed],
-          components: [],
-        });
-      }
+    }
 
-      return interaction.followUp({
-        embeds: [agreeToRules(interaction.user.displayName, interaction.user.displayAvatarURL())],
-        components: [row],
-      });
-    }
-  } else if (interaction.customId === "claimsNoActionReports") {
-    const hasActionReports = await mongo.hasActionReports(interaction.user.id);
-    if (hasActionReports) {
-      playersCurrentlyRegistering.delete(interaction.user.id);
-      return interaction.update({
-        embeds: [
-          automaticDenial(interaction.user.displayName, interaction.user.displayAvatarURL()),
-        ],
-        components: [],
-      });
-    } else {
-      return interaction.update({
-        embeds: [agreeToRules(interaction.user.displayName, interaction.user.displayAvatarURL())],
-        components: [row],
-      });
-    }
+    return interaction.followUp({
+      embeds: [agreeToRules(interaction.user.displayName, interaction.user.displayAvatarURL())],
+      components: [row],
+    });
   }
-});
+}
 
-client.on("interactionCreate", async (interaction) => {
-  if (
-    !interaction.isModalSubmit() ||
-    interaction.user.bot ||
-    interaction.customId !== "actionReportsModal"
-  )
-    return;
+async function handleClaimsNoActionReports(interaction) {
+  const hasActionReports = await mongo.hasActionReports(interaction.user.id);
+  if (hasActionReports) {
+    playersCurrentlyRegistering.delete(interaction.user.id);
+    return interaction.update({
+      embeds: [automaticDenial(interaction.user.displayName, interaction.user.displayAvatarURL())],
+      components: [],
+    });
+  } else {
+    return interaction.update({
+      embeds: [agreeToRules(interaction.user.displayName, interaction.user.displayAvatarURL())],
+      components: [row],
+    });
+  }
+}
 
+async function handleActionReportsModal(interaction) {
   const reasonForReports = interaction.fields.getTextInputValue("reasonForReports");
   const actionReportsAppeal = interaction.fields.getTextInputValue("actionReportsAppeal");
   playersCurrentlyRegistering.get(interaction.user.id).actionReports = {
@@ -81,7 +71,7 @@ client.on("interactionCreate", async (interaction) => {
     embeds: [agreeToRules(interaction.user.displayName, interaction.user.displayAvatarURL())],
     components: [row],
   });
-});
+}
 
 const row = new ActionRowBuilder().addComponents(
   new ButtonBuilder()
@@ -112,3 +102,9 @@ const modal = new ModalBuilder()
   );
 
 require("./6MansRank.js");
+
+module.exports = {
+  handleClaimsActionReports,
+  handleClaimsNoActionReports,
+  handleActionReportsModal,
+};

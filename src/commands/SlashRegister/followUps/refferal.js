@@ -10,13 +10,9 @@ const {
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } = require("discord.js");
-client.on("interactionCreate", async (interaction) => {
-  if (
-    !interaction.isStringSelectMenu() ||
-    interaction.user.bot ||
-    interaction.customId !== "ageCheckMenu"
-  )
-    return;
+const { handleRefferalMenu } = require("./prevDenied");
+
+async function handleAgeSelection(interaction) {
   if (interaction.values[0] === "notOldEnough") {
     playersCurrentlyRegistering.delete(interaction.user.id);
     return interaction.update({
@@ -31,7 +27,7 @@ client.on("interactionCreate", async (interaction) => {
     embeds: [refferal(interaction.user.displayName, interaction.user.displayAvatarURL())],
     components: [row],
   });
-});
+}
 
 const row = new ActionRowBuilder().addComponents(
   new StringSelectMenuBuilder()
@@ -47,3 +43,5 @@ const row = new ActionRowBuilder().addComponents(
 );
 
 require("./prevDenied");
+
+module.exports = { handleAgeSelection, handleRefferalMenu };

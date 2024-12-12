@@ -6,14 +6,7 @@ const { prevDenied } = require("../../../util/embeds/registrationEmbeds.js");
 const { StringSelectMenuBuilder } = require("@discordjs/builders");
 const { ButtonBuilder } = require("@discordjs/builders");
 
-client.on("interactionCreate", async (interaction) => {
-  if (
-    !interaction.isStringSelectMenu() ||
-    interaction.user.bot ||
-    interaction.customId !== "refferalMenu"
-  )
-    return;
-
+async function handleRefferalMenu(interaction) {
   if (interaction.values[0] === "other" || interaction.values[0] === "friend") {
     await interaction.showModal(modal(interaction.values[0]));
   } else {
@@ -23,16 +16,9 @@ client.on("interactionCreate", async (interaction) => {
       components: [row],
     });
   }
-});
+}
 
-client.on("interactionCreate", async (interaction) => {
-  if (
-    !interaction.isModalSubmit() ||
-    interaction.user.bot ||
-    interaction.customId !== "refferalModal"
-  )
-    return;
-
+async function handleRefferalModal(interaction) {
   const refferal = interaction.fields.getTextInputValue("refferalInput");
   playersCurrentlyRegistering.get(interaction.user.id).refferal = refferal;
   console.log(playersCurrentlyRegistering.get(interaction.user.id));
@@ -40,7 +26,7 @@ client.on("interactionCreate", async (interaction) => {
     embeds: [prevDenied(interaction.user.displayName, interaction.user.displayAvatarURL())],
     components: [row],
   });
-});
+}
 
 const row = new ActionRowBuilder().addComponents(
   new ButtonBuilder().setCustomId("hasBeenDenied").setLabel("Yes").setStyle(ButtonStyle.Primary),
@@ -67,3 +53,5 @@ const modal = (type) => {
 };
 
 require("./hasBeenDenied.js");
+
+module.exports = { handleRefferalMenu, handleRefferalModal };

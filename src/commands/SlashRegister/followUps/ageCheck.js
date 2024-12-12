@@ -13,21 +13,14 @@ const {
   ActionRowBuilder,
 } = require("discord.js");
 
-client.on("interactionCreate", async (interaction) => {
-  if (
-    !interaction.isButton() ||
-    interaction.user.bot ||
-    interaction.customId !== "confirmRegistrationStart"
-  )
-    return;
-
+async function confirmRegistrationStart(interaction) {
   playersCurrentlyRegistering.set(interaction.user.id, {});
 
   return interaction.update({
     embeds: [ageCheck(interaction.user.displayName, interaction.user.displayAvatarURL())],
     components: [row],
   });
-});
+}
 
 const row = new ActionRowBuilder().addComponents(
   new StringSelectMenuBuilder()
@@ -43,3 +36,5 @@ const row = new ActionRowBuilder().addComponents(
 );
 
 require("./refferal");
+
+module.exports = { confirmRegistrationStart };

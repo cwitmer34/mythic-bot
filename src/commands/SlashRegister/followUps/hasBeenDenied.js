@@ -12,28 +12,38 @@ const { ButtonBuilder } = require("@discordjs/builders");
 const { ButtonStyle, TextInputStyle } = require("discord.js");
 const { ModalBuilder } = require("@discordjs/builders");
 
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isButton() || interaction.user.bot) return;
+async function handleHasBeenDenied(interaction) {
   const hasBeenDenied = await mongo.hasBeenDenied(interaction.user.id);
+  if (hasBeenDenied) {
+    await interaction.showModal(modal);
+  } else {
+    return interaction.update({
+      embeds: [
+        prevActionReports(interaction.user.displayName, interaction.user.displayAvatarURL()),
+      ],
+      components: [row],
+    });
+  }
+}
 
-  if (interaction.customId === "hasntBeenDenied" && hasBeenDenied) {
+async function handleHasntBeenDenied(interaction) {
+  const hasBeenDenied = await mongo.hasBeenDenied(interaction.user.id);
+  if (hasBeenDenied) {
     playersCurrentlyRegistering.delete(interaction.user.id);
     return interaction.update({
       embeds: [automaticDenial(interaction.user.displayName, interaction.user.displayAvatarURL())],
       components: [],
     });
-  } else if (interaction.customId === "hasBeenDenied" && !hasBeenDenied) {
+  } else {
     const embed = misclickHasBeenDenied(
       interaction.user.displayName,
       interaction.user.displayAvatarURL()
     );
     embed.setTitle(`Misclick Detected (5)`);
-
     await interaction.update({
       embeds: [embed],
       components: [],
     });
-
     for (let i = 4; i >= 0; i--) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       embed.setTitle(`Misclick Detected (${i})`);
@@ -48,25 +58,10 @@ client.on("interactionCreate", async (interaction) => {
       ],
       components: [row],
     });
-  } else if (interaction.customId === "hasBeenDenied" && hasBeenDenied) {
-    await interaction.showModal(modal);
-  } else if (interaction.customId === "hasntBeenDenied" && !hasBeenDenied) {
-    return interaction.update({
-      embeds: [
-        prevActionReports(interaction.user.displayName, interaction.user.displayAvatarURL()),
-      ],
-      components: [row],
-    });
   }
-});
+}
 
-client.on("interactionCreate", async (interaction) => {
-  if (
-    !interaction.isModalSubmit() ||
-    interaction.user.bot ||
-    interaction.customId !== "denialModal"
-  )
-    return;
+async function handleDenialModal(interaction) {
   const reasonForDenial = interaction.fields.getTextInputValue("reasonForDenial");
   const appeal = interaction.fields.getTextInputValue("denialAppeal");
   playersCurrentlyRegistering.get(interaction.user.id).denial = {
@@ -77,7 +72,7 @@ client.on("interactionCreate", async (interaction) => {
     embeds: [prevActionReports(interaction.user.displayName, interaction.user.displayAvatarURL())],
     components: [row],
   });
-});
+}
 
 const row = new ActionRowBuilder().addComponents(
   new ButtonBuilder()
@@ -111,3 +106,5 @@ const modal = new ModalBuilder()
   );
 
 require("./agreeToRules.js");
+
+module.exports = { handleHasBeenDenied, handleHasntBeenDenied, handleDenialModal };

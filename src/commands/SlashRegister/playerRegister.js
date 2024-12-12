@@ -9,9 +9,7 @@ const {
 
 const playersCurrentlyRegistering = new Map();
 
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand() || interaction.commandName !== "register" || interaction.user.bot)
-    return;
+async function startRegistrationProcess(interaction) {
   const isRegistered = await mongo.checkPlayerRegistration(interaction.user.id);
   const buttons = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
@@ -32,20 +30,21 @@ client.on("interactionCreate", async (interaction) => {
     ephemeral: true,
     components: isRegistered ? [] : [buttons],
   });
-});
+}
 
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isButton() || interaction.user.bot) return;
-  if (interaction.customId === "cancelRegistrationStart") {
-    return interaction.update({
-      embeds: [
-        cancelRegistrationStart(interaction.user.displayName, interaction.user.displayAvatarURL()),
-      ],
-      components: [],
-    });
-  }
-});
+async function cancelRegistrationProcess(interaction) {
+  return interaction.update({
+    embeds: [
+      cancelRegistrationStart(interaction.user.displayName, interaction.user.displayAvatarURL()),
+    ],
+    components: [],
+  });
+}
 
-module.exports = { playersCurrentlyRegistering };
+module.exports = {
+  playersCurrentlyRegistering,
+  startRegistrationProcess,
+  cancelRegistrationProcess,
+};
 
 require("./followUps/ageCheck");
