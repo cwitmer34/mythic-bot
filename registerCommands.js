@@ -4,6 +4,10 @@ const config = require("./src/config.json");
 
 const commands = [
   {
+    name: "createschedule",
+    description: "Create a new schedule",
+  },
+  {
     name: "register",
     description: "Start the player registration process",
   },
