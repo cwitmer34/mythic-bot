@@ -129,6 +129,18 @@ class MongoDB {
       .collection("players")
       .findOne({ username });
   }
+
+  async setTeamSchedules(teamIds, schedules) {
+    for (let i = 0; i < schedules.length; i++) {
+      await mongoose.connection
+        .useDb("mythicdatabase")
+        .collection("teams")
+        .updateOne({ id: teamIds[i] }, { $set: { schedule: schedules[i] } });
+    }
+  }
+  async fetchTeams() {
+    return await mongoose.connection.useDb("mythicdatabase").collection("teams").find().toArray();
+  }
 }
 
 const mongo = new MongoDB();
