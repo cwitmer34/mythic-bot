@@ -29,5 +29,6 @@ client.login(config.token);
 
 module.exports = { client, appsBeingReviewed };
 
-require("./commands/SlashRegister/playerRegister");
 require("./commands/AppReviewCmds/staffReviewRegApps");
+require("./commands/CreateSchedule/createSchedule");
+require("./commands/commandHandler");
